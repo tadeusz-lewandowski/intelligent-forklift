@@ -2,7 +2,17 @@
 
 
 
-
+function Forklift(forkliftPosition, forkliftSize, color){
+	this.position = {
+		x: forkliftPosition.x,
+		y: forkliftPosition.y
+	}
+	this.size = {
+		width: forkliftSize.width,
+		height: forkliftSize.height,		
+	}
+	this.color = color;
+}
 
 // Simulation object - canvas
 
