@@ -71,7 +71,7 @@ Simulation.prototype = {
 		canvas.width = this.canvasWidth;
 		canvas.height = this.canvasHeight;
 		this.canvasObject = canvas.getContext('2d');
-		this.forklift.movePackage(0, 6, this.shelves, this);
+		// this.forklift.movePackage(0, 6, this.shelves, this);
 				
 	},
 	setShelves: function(shelvesArray){
@@ -107,6 +107,29 @@ Simulation.prototype = {
 		this.canvasObject.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.drawShelves();
 		this.drawForklift();
+	}
+}
+
+function Parser(sentenceId, parseId, shelvesReference){
+	this.inputSentence = document.getElementById(sentenceId);
+	this.buttonParse = document.getElementById(parseId);
+	this.buttonParse.addEventListener("click", this.parseSentence.bind(this));
+	this.sentence = "";
+	this.shelves = shelvesReference;
+}
+
+Parser.prototype = {
+	parseSentence: function(){
+		const sentence = this.inputSentence.value;
+
+		if(/((U|u)mie..|(P|p)rzenie.) .* pacz.. ko.. .* paczki+/.test(sentence)){
+			console.log("Pasuje");
+			let words = sentence.split(" ");
+			console.log(words)
+			console.log(words.search(/ziel.*/))
+		} else{
+			console.log("nie pasuje")
+		}
 	}
 }
 
@@ -213,5 +236,7 @@ const shelves = [
 const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves);
 c.init();
 c.render();
+
+const p = new Parser("sentence", "parse")
 // c.drawShelves();
 // c.drawForklift();
