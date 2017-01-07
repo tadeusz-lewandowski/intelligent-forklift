@@ -4,6 +4,10 @@
 
 function Forklift(forkliftPosition, forkliftSize, color){
 	this.position = {};
+	this.startPosition = {
+		x: forkliftPosition.x,
+		y: forkliftPosition.y
+	}
 	this.setPosition(forkliftPosition.x, forkliftPosition.y);
 	this.size = {
 		width: forkliftSize.width,
@@ -34,7 +38,7 @@ function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkl
 	this.canvasWidth = canvasWidth;
 	this.canvasHeight = canvasHeight;
 	this.setShelves(shelvesArray);
-	this.forklift = new Forklift(forkliftPosition, forkliftSize, forkliftColor);;
+	this.forklift = new Forklift(forkliftPosition, forkliftSize, forkliftColor);
 }
 
 Simulation.prototype = {
@@ -43,6 +47,7 @@ Simulation.prototype = {
 		canvas.width = this.canvasWidth;
 		canvas.height = this.canvasHeight;
 		this.canvasObject = canvas.getContext('2d');
+		// this.forklift.movePackage(0, 3, this.shelves);
 				
 	},
 	setShelves: function(shelvesArray){
@@ -68,6 +73,11 @@ Simulation.prototype = {
 		const forklift = this.forklift;
 		simulation.fillStyle = forklift.color;
     	simulation.fillRect(forklift.position.x, forklift.position.y, forklift.size.width, forklift.size.height);
+	},
+	render: function(){
+		this.canvasObject.clearRect(0, 0, this.canvasObject.width, this.canvasObject.height);
+		this.drawShelves();
+		this.drawForklift();
 	}
 }
 
@@ -132,5 +142,6 @@ const shelves = [
 
 const c = new Simulation("simulation", 1080, 720, {x: 400, y: 60}, {width: 60, height: 60}, "white", shelves);
 c.init();
-c.drawShelves();
-c.drawForklift();
+c.render();
+// c.drawShelves();
+// c.drawForklift();
