@@ -38,13 +38,13 @@ Forklift.prototype = {
 
 		delay(1000).then(() => {
 			source.package = null;
-			this.setPosition(source.position.x + 80, source.position.y)
+			this.setPosition(source.position.x > this.position.x ? source.position.x - 80 : source.position.x + 80, source.position.y)
 			simulationReference.render();
 
 			return delay(1000)
 		}).then(() => {
 			destination.package = destinationPackage;
-			this.setPosition(destination.position.x + 80, destination.position.y)
+			this.setPosition(destination.position.x > this.position.x ? destination.position.x - 80 : destination.position.x + 80, destination.position.y)
 			simulationReference.render();
 
 			return delay(1000)
@@ -72,7 +72,7 @@ Simulation.prototype = {
 		canvas.width = this.canvasWidth;
 		canvas.height = this.canvasHeight;
 		this.canvasObject = canvas.getContext('2d');
-		this.forklift.movePackage(0, 3, this.shelves, this);
+		this.forklift.movePackage(0, 6, this.shelves, this);
 				
 	},
 	setShelves: function(shelvesArray){
@@ -82,7 +82,7 @@ Simulation.prototype = {
 		const simulation = this.canvasObject;
 
 		this.shelves.forEach((shelve) => {
-			console.table(shelve)
+			
 			if(shelve.package == null){
 				simulation.beginPath();
 				simulation.lineWidth="4";
@@ -90,14 +90,10 @@ Simulation.prototype = {
 				simulation.rect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height); 
 				simulation.stroke();
 				
-				console.log("Rysuje ramke")	
 			} else{
 				
 				simulation.fillStyle = shelve.package.color;
 	        	simulation.fillRect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height);
-	        	console.log("Wypełniam")
-	        	
-
 			}
 			
 		});
@@ -112,9 +108,6 @@ Simulation.prototype = {
 		this.canvasObject.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.drawShelves();
 		this.drawForklift();
-		console.log("drawing")
-		// console.table(this.shelves)
-
 	}
 }
 
@@ -174,10 +167,51 @@ const shelves = [
 			height: 60
 		},
 		package: null
-	}
+	},
+	{
+		position: {
+			x: 800,
+			y: 60
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: {
+			color: "pink",
+			size: 60,
+			weight: 20
+		}
+	},
+	{
+		position: {
+			x: 800,
+			y: 140
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: {
+			color: "aqua",
+			size: 60,
+			weight: 20
+		}
+	},
+	{
+		position: {
+			x: 800,
+			y: 220
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: null
+	},
 ];
 
-const c = new Simulation("simulation", 1080, 720, {x: 400, y: 60}, {width: 60, height: 60}, "white", shelves);
+const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves);
 c.init();
 c.render();
 // c.drawShelves();
