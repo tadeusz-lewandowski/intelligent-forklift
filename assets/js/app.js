@@ -35,7 +35,6 @@ Forklift.prototype = {
 		   });
 		}
 
-
 		delay(1000).then(() => {
 			source.package = null;
 			this.setPosition(source.position.x > this.position.x ? source.position.x - 80 : source.position.x + 80, source.position.y)

@@ -1,3 +1,41 @@
 canvas{
 	background: #333;
+	display: block;
+	margin: 0 auto;
+}
+
+html{
+	font-size: 1.5em;
+}
+
+h1{
+	font-family: sans-serif;
+	font-size: 1.2rem;
+	line-height: 2rem;
+	color: #333;
+	text-align: center;
+	margin: 1rem 0;
+}
+
+.inputs-container{
+	display: flex;
+	justify-content: center;
+	margin: 1rem 0;
+}
+
+.inputs-container > input[type=text]{
+	line-height: 1rem;
+	font-size: 0.75rem;
+	font-family: sans-serif;
+	width: 25rem
+}
+
+.inputs-container > button{
+	line-height: 1rem;
+	font-size: 0.75rem;
+	font-family: sans-serif;
+	padding: 0 1rem;
+	background: #333;
+	border: none;
+	color: white;
 }
