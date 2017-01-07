@@ -1,6 +1,6 @@
 "use strict";
 
-
+// forklift object
 
 function Forklift(forkliftPosition, forkliftSize, color){
 	this.position = {};
@@ -21,12 +21,37 @@ Forklift.prototype = {
 		this.position.x = x;
 		this.position.y = y;
 	},
-	movePackage: function(fromIndex, toIndex, shelvesReference){
+	movePackage: function(fromIndex, toIndex, shelvesReference, simulationReference){
 		const destination = shelvesReference[toIndex];
 		const source = shelvesReference[fromIndex]
-		if(destination.package != null) return -1;
-		destination.package = source.package;
-		source.package = null;
+		if(destination.package != null) return;
+
+		const destinationPackage = source.package;
+
+		
+		function delay(t) {
+		   return new Promise(function(resolve) { 
+		       setTimeout(resolve, t)
+		   });
+		}
+
+
+		delay(1000).then(() => {
+			source.package = null;
+			this.setPosition(source.position.x + 80, source.position.y)
+			simulationReference.render();
+
+			return delay(1000)
+		}).then(() => {
+			destination.package = destinationPackage;
+			this.setPosition(destination.position.x + 80, destination.position.y)
+			simulationReference.render();
+
+			return delay(1000)
+		}).then(() => {
+			this.setPosition(this.startPosition.x, this.startPosition.y);
+			simulationReference.render();
+		});
 
 	}
 }
@@ -47,7 +72,7 @@ Simulation.prototype = {
 		canvas.width = this.canvasWidth;
 		canvas.height = this.canvasHeight;
 		this.canvasObject = canvas.getContext('2d');
-		// this.forklift.movePackage(0, 3, this.shelves);
+		this.forklift.movePackage(0, 3, this.shelves, this);
 				
 	},
 	setShelves: function(shelvesArray){
@@ -57,15 +82,24 @@ Simulation.prototype = {
 		const simulation = this.canvasObject;
 
 		this.shelves.forEach((shelve) => {
+			console.table(shelve)
 			if(shelve.package == null){
+				simulation.beginPath();
 				simulation.lineWidth="4";
 				simulation.strokeStyle="white";
 				simulation.rect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height); 
-				simulation.stroke();	
+				simulation.stroke();
+				
+				console.log("Rysuje ramke")	
 			} else{
+				
 				simulation.fillStyle = shelve.package.color;
 	        	simulation.fillRect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height);
+	        	console.log("Wypełniam")
+	        	
+
 			}
+			
 		});
 	},
 	drawForklift: function(){
@@ -75,9 +109,12 @@ Simulation.prototype = {
     	simulation.fillRect(forklift.position.x, forklift.position.y, forklift.size.width, forklift.size.height);
 	},
 	render: function(){
-		this.canvasObject.clearRect(0, 0, this.canvasObject.width, this.canvasObject.height);
+		this.canvasObject.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 		this.drawShelves();
 		this.drawForklift();
+		console.log("drawing")
+		// console.table(this.shelves)
+
 	}
 }
 
