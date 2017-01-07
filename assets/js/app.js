@@ -16,6 +16,14 @@ Forklift.prototype = {
 	setPosition: function(x, y){
 		this.position.x = x;
 		this.position.y = y;
+	},
+	movePackage: function(fromIndex, toIndex, shelvesReference){
+		const destination = shelvesReference[toIndex];
+		const source = shelvesReference[fromIndex]
+		if(destination.package != null) return -1;
+		destination.package = source.package;
+		source.package = null;
+
 	}
 }
 
