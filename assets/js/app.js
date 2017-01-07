@@ -15,42 +15,74 @@ function Simulation(canvasId, canvasWidth, canvasHeight){
 
 Simulation.prototype = {
 	init: function(){
-		this.canvasObject = document.getElementById(this.canvasId);
-		this.canvasObject.width = this.canvasWidth;
-		this.canvasObject.height = this.canvasHeight;		
+		const canvas = document.getElementById(this.canvasId);
+		canvas.width = this.canvasWidth;
+		canvas.height = this.canvasHeight;
+		this.canvasObject = canvas.getContext('2d');
+				
 	},
 	setShelves: function(shelvesArray){
 		this.shelves = shelvesArray;
+	},
+	drawShelves: function(){
+		const simulation = this.canvasObject;
+
+		this.shelves.forEach((shelve) => {
+			simulation.fillStyle = shelve.package.color;
+        	simulation.fillRect (shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height);
+		});
 	}
 }
 
-const c = new Simulation("simulation", 1080, 720);
-c.init();
-c.setShelves([
+const shelves = [
 	{
-		name: "dwq"
+		position: {
+			x: 60,
+			y: 60
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: {
+			color: "red",
+			size: 60,
+			weight: 20
+		}
 	},
 	{
-		name: "dvvvv"
+		position: {
+			x: 60,
+			y: 140
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: {
+			color: "blue",
+			size: 40,
+			weight: 20
+		}
+	},
+	{
+		position: {
+			x: 60,
+			y: 220
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: {
+			color: "orange",
+			size: 30,
+			weight: 60
+		}
 	}
-]);
+];
 
-
-
-
-// function App(canvasId, canvasWidth, canvasHeight){
-// 	this.canvasId = canvasId;
-// 	this.canvasWidth = canvasWidth;
-// 	this.canvasHeight = canvasHeight;
-// }
-
-// App.prototype = {
-// 	init: function(){
-// 		this.canvasObject = document.getElementById(this.canvasId);
-// 		this.canvasObject.width = this.canvasWidth;
-// 		this.canvasObject.height = this.canvasHeight;
-// 	}
-// }
-
-// const app = new App("simulation", 400, 300);
-// app.init();
+const c = new Simulation("simulation", 1080, 720);
+c.init();
+c.setShelves(shelves);
+c.drawShelves()
