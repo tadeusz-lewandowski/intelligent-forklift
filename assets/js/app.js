@@ -28,8 +28,15 @@ Simulation.prototype = {
 		const simulation = this.canvasObject;
 
 		this.shelves.forEach((shelve) => {
-			simulation.fillStyle = shelve.package.color;
-        	simulation.fillRect (shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height);
+			if(shelve.package == null){
+				simulation.lineWidth="4";
+				simulation.strokeStyle="white";
+				simulation.rect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height); 
+				simulation.stroke();	
+			} else{
+				simulation.fillStyle = shelve.package.color;
+	        	simulation.fillRect(shelve.position.x, shelve.position.y, shelve.size.width, shelve.size.height);
+			}
 		});
 	}
 }
@@ -79,6 +86,17 @@ const shelves = [
 			size: 30,
 			weight: 60
 		}
+	},
+	{
+		position: {
+			x: 60,
+			y: 300
+		},
+		size: {
+			width: 60,
+			height: 60
+		},
+		package: null
 	}
 ];
 
