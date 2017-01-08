@@ -172,7 +172,7 @@ Parser.prototype = {
 				}
 			}
 			// find package with color to put next to it
-			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*|nieb.*)/.test(words[4])){
+			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[4])){
 				const recognizedColor = this.recognizeColor(words[4]);
 				if(recognizedColor != null){
 					
