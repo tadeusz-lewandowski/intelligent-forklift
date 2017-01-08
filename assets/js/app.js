@@ -67,8 +67,29 @@ function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkl
 	this.input = document.getElementById(inputId);
 	this.button = document.getElementById(buttonId);
 	this.button.addEventListener("click", () => {
+		console.log(this)
 		const parsed = this.parser.parseSentence(this.input.value);
 		console.log(parsed);
+		if(parsed.type == "nextTo"){
+			if(parsed.to > 0 && parsed.to < this.shelves.length){
+				if(this.shelves[parsed.to - 1].package == null){
+
+					this.forklift.movePackage(parsed.from, parsed.to - 1, this.shelves, this);
+				} else if(this.shelves[parsed.to + 1].package == null){
+					console.log("+1")
+					this.forklift.movePackage(parsed.from, parsed.to + 1, this.shelves, this);
+				}
+			} else if(parsed.to == 0){
+				if(this.shelves[parsed.to + 1].package == null){
+					this.forklift.movePackage(parsed.from, parsed.to + 1, this.shelves, this);
+				}
+			} else if(parsed.to == this.shelves.length){
+				if(this.shelves[parsed.to - 1].package == null){
+					this.forklift.movePackage(parsed.from, parsed.to - 1, this.shelves, this);
+				}
+			}
+
+		}
 	});
 }
 
@@ -128,15 +149,15 @@ function Parser(shelvesReference){
 Parser.prototype = {
 	parseSentence: function(sentence){
 		// const sentence = this.inputSentence.value;
-
+		let objectsToFind = {type: "none", from: -1, to: -1}
 		if(/((U|u)mie..|(P|p)rzenie.) .* pacz.. ko.. .* paczki+/.test(sentence)){
 			console.log("Pasuje");
 			let words = sentence.split(" ");
 			// console.log(words)
 
-			let objectsToFind = {from: -1, to: -1}
+			
 			// find package with color
-			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*)/.test(words[1])){
+			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[1])){
 				const recognizedColor = this.recognizeColor(words[1]);
 				if(recognizedColor != null){
 					
@@ -151,7 +172,7 @@ Parser.prototype = {
 				}
 			}
 			// find package with color to put next to it
-			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*)/.test(words[4])){
+			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*|nieb.*)/.test(words[4])){
 				const recognizedColor = this.recognizeColor(words[4]);
 				if(recognizedColor != null){
 					
@@ -169,6 +190,7 @@ Parser.prototype = {
 			if(objectsToFind.from == -1 || objectsToFind.to == -1){
 				return false;
 			} else{
+				objectsToFind.type = "nextTo";
 				return objectsToFind;
 			}
 
@@ -195,6 +217,9 @@ Parser.prototype = {
 				break;
 			case /tur.*/.test(word):
 				color = "aqua";
+				break;
+			case /nieb.*/.test(word):
+				color = "blue";
 				break;
 			default:
 				color = null;
