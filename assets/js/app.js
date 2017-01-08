@@ -57,12 +57,19 @@ Forklift.prototype = {
 
 // Simulation object - canvas
 
-function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkliftSize, forkliftColor, shelvesArray){
+function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkliftSize, forkliftColor, shelvesArray, inputId, buttonId){
 	this.canvasId = canvasId;
 	this.canvasWidth = canvasWidth;
 	this.canvasHeight = canvasHeight;
 	this.setShelves(shelvesArray);
 	this.forklift = new Forklift(forkliftPosition, forkliftSize, forkliftColor);
+	this.parser = new Parser(this.shelves);
+	this.input = document.getElementById(inputId);
+	this.button = document.getElementById(buttonId);
+	this.button.addEventListener("click", () => {
+		const parsed = this.parser.parseSentence(this.input.value);
+		console.log(parsed);
+	});
 }
 
 Simulation.prototype = {
@@ -110,26 +117,91 @@ Simulation.prototype = {
 	}
 }
 
-function Parser(sentenceId, parseId, shelvesReference){
-	this.inputSentence = document.getElementById(sentenceId);
-	this.buttonParse = document.getElementById(parseId);
-	this.buttonParse.addEventListener("click", this.parseSentence.bind(this));
-	this.sentence = "";
+function Parser(shelvesReference){
+	// this.inputSentence = document.getElementById(sentenceId);
+	// this.buttonParse = document.getElementById(parseId);
+	// this.buttonParse.addEventListener("click", this.parseSentence.bind(this));
+	// this.sentence = "";
 	this.shelves = shelvesReference;
 }
 
 Parser.prototype = {
-	parseSentence: function(){
-		const sentence = this.inputSentence.value;
+	parseSentence: function(sentence){
+		// const sentence = this.inputSentence.value;
 
 		if(/((U|u)mie..|(P|p)rzenie.) .* pacz.. ko.. .* paczki+/.test(sentence)){
 			console.log("Pasuje");
 			let words = sentence.split(" ");
-			console.log(words)
-			console.log(words.search(/ziel.*/))
+			// console.log(words)
+
+			let objectsToFind = {from: -1, to: -1}
+			// find package with color
+			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*)/.test(words[1])){
+				const recognizedColor = this.recognizeColor(words[1]);
+				if(recognizedColor != null){
+					
+					objectsToFind.from = this.shelves.findIndex((shelve) => {
+						if(shelve.package != null){
+							return shelve.package.color == recognizedColor
+						} else{
+							return false;
+						}
+					});
+					// console.log(`from ${fromToDestination.from}`)
+				}
+			}
+			// find package with color to put next to it
+			if(/(ziel.*|czer.*|pom.*|róz.*|tur.*)/.test(words[4])){
+				const recognizedColor = this.recognizeColor(words[4]);
+				if(recognizedColor != null){
+					
+					objectsToFind.to = this.shelves.findIndex((shelve) => {
+						if(shelve.package != null){
+							return shelve.package.color == recognizedColor
+						} else{
+							return false;
+						}
+					});
+					// console.log(`from ${fromToDestination.from}`)
+				}
+			}
+
+			if(objectsToFind.from == -1 || objectsToFind.to == -1){
+				return false;
+			} else{
+				return objectsToFind;
+			}
+
+
 		} else{
 			console.log("nie pasuje")
 		}
+	},
+	recognizeColor: function(word){
+		let color = null;
+
+		switch(true){
+			case /ziel.*/.test(word):
+				color = "green";
+				break;
+			case /czer.*/.test(word):
+				color = "red";
+				break;
+			case /pom.*/.test(word):
+				color = "orange";
+				break;
+			case /róż.*/.test(word):
+				color = "pink";
+				break;
+			case /tur.*/.test(word):
+				color = "aqua";
+				break;
+			default:
+				color = null;
+				break;
+		}
+		console.log("kolor", color)
+		return color;
 	}
 }
 
@@ -233,10 +305,10 @@ const shelves = [
 	},
 ];
 
-const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves);
+const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves, "sentence", "parse");
 c.init();
 c.render();
 
-const p = new Parser("sentence", "parse")
+// const p = new Parser("sentence", "parse", shelves)
 // c.drawShelves();
 // c.drawForklift();
