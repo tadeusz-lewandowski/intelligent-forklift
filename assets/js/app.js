@@ -57,7 +57,7 @@ Forklift.prototype = {
 
 // Simulation object - canvas
 
-function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkliftSize, forkliftColor, shelvesArray, inputId, buttonId){
+function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkliftSize, forkliftColor, shelvesArray, inputId, buttonId, buttonSpeechId){
 	this.canvasId = canvasId;
 	this.canvasWidth = canvasWidth;
 	this.canvasHeight = canvasHeight;
@@ -66,7 +66,37 @@ function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkl
 	this.parser = new Parser(this.shelves);
 	this.input = document.getElementById(inputId);
 	this.button = document.getElementById(buttonId);
-	this.button.addEventListener("click", () => {
+	this.buttonSpeech = document.getElementById(buttonSpeechId);
+	this.button.addEventListener("click", this.startWorking.bind(this));
+
+	const recognition = new webkitSpeechRecognition();
+	recognition.lang = 'pl-PL';
+	recognition.addEventListener("result", (event) => {
+		this.input.value = event.results[0][0].transcript;
+		console.log(event.results[0][0].transcript);
+		this.startWorking();
+	});
+
+	this.buttonSpeech.addEventListener("click", () => {
+		recognition.start();
+	});
+
+	
+}
+
+Simulation.prototype = {
+	init: function(){
+		const canvas = document.getElementById(this.canvasId);
+		canvas.width = this.canvasWidth;
+		canvas.height = this.canvasHeight;
+		this.canvasObject = canvas.getContext('2d');
+		// this.forklift.movePackage(0, 6, this.shelves, this);
+				
+	},
+	setShelves: function(shelvesArray){
+		this.shelves = shelvesArray;
+	},
+	startWorking: function(){
 		console.log(this)
 		const parsed = this.parser.parseSentence(this.input.value);
 		console.log(parsed);
@@ -90,20 +120,6 @@ function Simulation(canvasId, canvasWidth, canvasHeight, forkliftPosition, forkl
 			}
 
 		}
-	});
-}
-
-Simulation.prototype = {
-	init: function(){
-		const canvas = document.getElementById(this.canvasId);
-		canvas.width = this.canvasWidth;
-		canvas.height = this.canvasHeight;
-		this.canvasObject = canvas.getContext('2d');
-		// this.forklift.movePackage(0, 6, this.shelves, this);
-				
-	},
-	setShelves: function(shelvesArray){
-		this.shelves = shelvesArray;
 	},
 	drawShelves: function(){
 		const simulation = this.canvasObject;
@@ -148,17 +164,18 @@ function Parser(shelvesReference){
 
 Parser.prototype = {
 	parseSentence: function(sentence){
+		const sentenceLower = sentence.toLowerCase();
 		// const sentence = this.inputSentence.value;
 		let objectsToFind = {type: "none", from: -1, to: -1}
-		if(/((U|u)mie..|(P|p)rzenie.) .* pacz.. ko.. .* paczki+/.test(sentence)){
+		if(/.* koło .*/.test(sentenceLower)){
 			console.log("Pasuje");
-			let words = sentence.split(" ");
+			let words = sentenceLower.split(" ");
 			// console.log(words)
 
 			
 			// find package with color
-			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[1])){
-				const recognizedColor = this.recognizeColor(words[1]);
+			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[0])){
+				const recognizedColor = this.recognizeColor(words[0]);
 				if(recognizedColor != null){
 					
 					objectsToFind.from = this.shelves.findIndex((shelve) => {
@@ -172,8 +189,8 @@ Parser.prototype = {
 				}
 			}
 			// find package with color to put next to it
-			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[4])){
-				const recognizedColor = this.recognizeColor(words[4]);
+			if(/(ziel.*|czer.*|pom.*|róż.*|tur.*|nieb.*)/.test(words[2])){
+				const recognizedColor = this.recognizeColor(words[2]);
 				if(recognizedColor != null){
 					
 					objectsToFind.to = this.shelves.findIndex((shelve) => {
@@ -330,7 +347,7 @@ const shelves = [
 	},
 ];
 
-const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves, "sentence", "parse");
+const c = new Simulation("simulation", 1080, 720, {x: 440, y: 60}, {width: 60, height: 60}, "white", shelves, "sentence", "parse", "speech");
 c.init();
 c.render();
 
