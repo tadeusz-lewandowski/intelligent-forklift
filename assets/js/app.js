@@ -120,6 +120,10 @@ Simulation.prototype = {
 			}
 
 		}
+
+		if(parsed.type == "random"){
+			this.forklift.movePackage(parsed.from, parsed.to, this.shelves, this);
+		}
 	},
 	drawShelves: function(){
 		const simulation = this.canvasObject;
@@ -212,8 +216,39 @@ Parser.prototype = {
 			}
 
 
-		} else{
-			console.log("nie pasuje")
+		} else if(/.* w dowol.*/.test(sentenceLower)){
+			let words = sentenceLower.split(" ");
+			let recognizedColor = this.recognizeColor(words[0]);
+			if(recognizedColor != null){
+				objectsToFind.from = this.shelves.findIndex((shelve) => {
+					if(shelve.package != null){
+						return shelve.package.color == recognizedColor
+					} else{
+						return false;
+					}
+				});
+
+				let arrayOfEmpty = [];
+
+				this.shelves.forEach((shelve, index) => {
+					if(shelve.package == null) arrayOfEmpty.push(index);
+				});
+
+				const randomInt = Math.floor((Math.random() * arrayOfEmpty.length) + 0);
+
+				objectsToFind.to = arrayOfEmpty[randomInt];
+
+				if(objectsToFind.from == -1 || objectsToFind.to == -1){
+					return false;
+				} else{
+					objectsToFind.type = "random";
+					console.log("RANDOM")
+					return objectsToFind;
+				}
+
+			} else{
+				return false;
+			}
 		}
 	},
 	recognizeColor: function(word){
